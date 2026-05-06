@@ -1,17 +1,8 @@
 from textnode import TextNode, TextType
 from htmlnode import HTMLNode, LeafNode, ParentNode
+from functions import split_node_delimiter
 
-node = ParentNode(
-    "p",
-    [
-        LeafNode("b", "Bold text"),
-        LeafNode(None, "Normal text"),
-        ParentNode("div", [
-            LeafNode("h1", "title"),
-            LeafNode("i", "italic text"),
-        ], {"class": "container"}), 
-        LeafNode(None, "Normal text"),
-    ],
-)
+node = TextNode("This is `code` and more `code` and **bold** and nothing", TextType.TEXT)
 
-print(node.to_html())
+nodes = split_node_delimiter([node], "`", TextType.CODE)
+print(split_node_delimiter(nodes, "**", TextType.BOLD))
