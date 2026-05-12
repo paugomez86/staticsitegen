@@ -1,15 +1,12 @@
 from enum import Enum
 
 from htmlnode import LeafNode
+from type_enums import TextType
 
-class TextType(Enum):
-    TEXT = "text"
-    BOLD = "bold"
-    ITALIC = "italic"
-    CODE = "code"
-    LINK = "link"
-    IMAGE = "image"
 
+# TextNode objects represent fragments of plain text associated to a type (see enum above).
+# Depending on the type, they may store an url.
+# self.text_node_to_html_node() returns a HTMLNode with the proper tag, value and attributes.
 class TextNode:
     def __init__(self, text, text_type, url = None):
         if not isinstance(text_type, TextType):
@@ -37,8 +34,8 @@ class TextNode:
             case self.text_type.CODE:
                 return LeafNode("code", self.text, None)
             case self.text_type.LINK:
-                return LeafNode("a", self.text, {"href": {self.url}})
+                return LeafNode("a", self.text, {"href": self.url})
             case self.text_type.IMAGE:
-                return LeafNode("img", None, {"src": {self.url}, "alt": {self.text}})
+                return LeafNode("img", None, {"src": self.url, "alt": self.text})
             case _:
                 raise Exception("invalid text type")
