@@ -1,4 +1,4 @@
-import re
+import re, os
 from enum import Enum
 
 from textnode import TextNode
@@ -289,3 +289,31 @@ def block_ol_to_html_node(block):
         item_html_nodes = text_nodes_to_html_node(text_nodes)
         html_nodes.append(ParentNode("li", item_html_nodes))
     return ParentNode("ol", html_nodes)
+# =====================================================================
+
+# Checks if the given string is a valid H1 Markdown string and returns it stripped.
+# Used to generate the title of the page in the head section.
+def extract_title(markdown):
+    if re.search(r"^# .+", markdown) is None:
+        raise Exception("invalid title Markdown")
+    return markdown.lstrip("#").strip()
+
+
+# Gets the path of the content, an html template, and the destination path for the html document.
+# Generates the document file combining content with template and stores it in dest_path.
+# Creates any necessary subdir.
+def generate_page(from_path, template_path, dest_path):
+    print(f"Generating page from {from_path} to {dest_path} using {template_path}")
+    with open(from_path, "r") as f:
+        markdown = f.read()
+    
+    with open(template_path, "r") as f:
+        template = f.read()
+    
+    title = extract_title(markdown.split("\n\n", 1)[0])
+    document = template.replace("{{ Title }}", title).replace("{{ Content }}", markdown_to_html_node(markdown).to_html())
+    
+    os.makedirs(os.path.dirname(dest_path), exist_ok=True) 
+    with open(dest_path, "w") as f:
+        f.write(document)
+    

@@ -1,7 +1,7 @@
 import unittest
 
 from textnode import TextNode
-from functions import split_node_delimiter, extract_markdown_images, extract_markdown_links, split_nodes_image, split_nodes_link, text_to_text_nodes, markdown_to_blocks, block_to_block_type, markdown_to_html_node
+from functions import split_node_delimiter, extract_markdown_images, extract_markdown_links, split_nodes_image, split_nodes_link, text_to_text_nodes, markdown_to_blocks, block_to_block_type, markdown_to_html_node, extract_title
 from type_enums import TextType, BlockType
 
 class TestFunctionsDelimiters(unittest.TestCase):
@@ -226,6 +226,19 @@ This is a OL:
             html,
             '<div><p>This is a OL:</p><ol><li>Element</li><li>Element with <b>bold</b></li><li><i>Italic element</i></li><li>Element with <a href="www.url.com">link</a></li></ol></div>',
         )
+
+
+class TestFunctionsMGeneratePublicContent(unittest.TestCase):
+    def test_extract_title(self):
+        test_cases = ["# title", "#    another title  "]
+        exception_cases = ["### wrong title", ""]
+        test_outputs = ["title", "another title"]
         
+        for test, output in zip(test_cases, test_outputs):
+            self.assertEqual(extract_title(test), output)
+        
+        for test in exception_cases:
+            self.assertRaises(Exception, extract_title, test)
+
 if __name__ == "__main__":
     unittest.main()

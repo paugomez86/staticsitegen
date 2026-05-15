@@ -1,12 +1,9 @@
 import os, shutil, argparse
 
-from textnode import TextNode
-from htmlnode import HTMLNode, LeafNode, ParentNode
-from functions import split_node_delimiter, extract_markdown_images, extract_markdown_links, split_nodes_image, text_to_text_nodes, markdown_to_blocks, block_to_block_type, markdown_to_html_node, block_to_html_nodes
-from type_enums import TextType
+from functions import extract_title, generate_page
 
-
-
+# Copies the contents or origin to destination recursively.
+# Used to copy the contents from static to public folder.
 def copy_dir_r(origin, destination):
     if not os.path.exists(origin):
         raise NotADirectoryError("invalid origin or destination folders")
@@ -36,15 +33,18 @@ def main():
     args = arg_parser.parse_args()
     
     # Setting default static and public folders in project root
-    origin = "static"
-    destination = "public"
+    static_origin = "static"
+    static_destination = "public"
     
     # Removing existing public folder if exists
-    if os.path.exists(destination):
-        shutil.rmtree(destination)
+    if os.path.exists(static_destination):
+        shutil.rmtree(static_destination)
         
     # Copying contents of static folder to public
-    copy_dir_r(origin, destination)
+    copy_dir_r(static_origin, static_destination)
+    
+    # Generating page
+    generate_page("content/index.md", "template.html", "public/index.html")
     
 
 if __name__ == "__main__":
