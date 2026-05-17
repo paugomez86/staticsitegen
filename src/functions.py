@@ -320,8 +320,9 @@ def extract_title(markdown):
 
 # Recursive function that traverses the given destination path finding the files.
 # Creates the necessary folders until a file is found. Then calls generate_page().
-# Used to copy the contents of content to public folder.
-def generate_pages_recursive(dir_path_content, template_path, dest_dir_path):
+# Basepath establishes the server root. By default, "/", it will be served in http://localhost:8888/
+# This is used to serve the public page to a repo.
+def generate_pages_recursive(dir_path_content, template_path, dest_dir_path, basepath):
     if not os.path.isdir(dir_path_content):
         raise Exception("invalid content path")
     if not os.path.isfile(template_path):
@@ -337,15 +338,15 @@ def generate_pages_recursive(dir_path_content, template_path, dest_dir_path):
         dest_path = os.path.join(dest_dir_path, item.replace(".md", ".html"))
         if os.path.isdir(item_path):
             # If the current item is a folder, calls itself giving the current folder as origin.
-            generate_pages_recursive(item_path, template_path, dest_path)
+            generate_pages_recursive(item_path, template_path, dest_path, basepath)
         else:
             # If it's a file, calls generate_page() passing the current MD item, the html target path and the given template.
-            generate_page(item_path, template_path, dest_path)
+            generate_page(item_path, template_path, dest_path, basepath)
 
 
 # Gets the path of the page in Markdown format, an html template.
 # Generates the corresponding html file in the given destination.
-def generate_page(from_path, template_path, dest_path):
+def generate_page(from_path, template_path, dest_path, basepath):
     # Reading source and template files.
     with open(from_path, "r") as f:
         markdown = f.read()
@@ -355,6 +356,10 @@ def generate_page(from_path, template_path, dest_path):
     # Getting the H1 header in file to generate the head title tag of the document.
     title = extract_title(markdown.split("\n\n", 1)[0])
     document = template.replace("{{ Title }}", title).replace("{{ Content }}", markdown_to_html_node(markdown).to_html())
+    
+    # Replacing basepath if a non-default has been provided.
+    if basepath != "/":
+        document = document.replace('href="/', f'href="{basepath}').replace('src="/', f'src="{basepath}')
     
     # Writing file
     with open(dest_path, "w") as f:
