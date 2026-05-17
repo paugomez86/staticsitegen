@@ -4,6 +4,7 @@ from textnode import TextNode
 from functions import split_node_delimiter, extract_markdown_images, extract_markdown_links, split_nodes_image, split_nodes_link, text_to_text_nodes, markdown_to_blocks, block_to_block_type, markdown_to_html_node, extract_title
 from type_enums import TextType, BlockType
 
+
 class TestFunctionsDelimiters(unittest.TestCase):
     def test_delimiter(self):
         nodes = [TextNode("`code` with plain text and **bold**", TextType.TEXT), TextNode("plain text with _italic text_", TextType.TEXT)]
